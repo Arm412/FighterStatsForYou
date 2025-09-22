@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fighterstats_db}
+      POSTGRES_USER: ${POSTGRES_USER:-fs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fs_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  app:
+    build:
+      context: ./backend/java
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-fighterstats_db}
+      POSTGRES_USER: ${POSTGRES_USER:-fs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fs_password}
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    restart: on-failure
+
+volumes:
+  pgdata:

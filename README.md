@@ -16,3 +16,23 @@ Quick starts
 - Frontend: use Angular CLI to create or run the app inside `frontend`
 
 This is a scaffold; follow README files in subfolders for details.
+
+Security note: environment variables and local credentials
+
+This repo uses docker-compose to run a local Postgres database. Credentials are configured via environment variables and should not be committed to source control.
+
+Instructions
+1. Copy `.env.example` to `.env` and update values as needed:
+
+   cp .env.example .env
+
+   # On PowerShell (Windows)
+   Copy-Item .env.example .env
+
+2. Start Postgres:
+
+   docker-compose up -d postgres
+
+3. The defaults in `.env.example` will match the Spring Boot config in `backend/java/src/main/resources/application.properties`.
+
+Do not commit your `.env` file. It is included in `.gitignore`.
