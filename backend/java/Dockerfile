@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for Spring Boot app
-FROM maven:3.9.4-eclipse-temurin-17 as build
+FROM maven:3.9.9-eclipse-temurin-17 as build
 WORKDIR /workspace
 COPY pom.xml mvnw* ./
 COPY src ./src
