@@ -1,28 +1,22 @@
--- ==========================
--- UFC EVENT DETAILS
--- ==========================
+-- UFC Event Details
 CREATE TABLE ufc_event_details (
     id SERIAL PRIMARY KEY,
-    event VARCHAR(255) UNIQUE NOT NULL,
+    event VARCHAR(255) UNIQUE,
     url TEXT,
     date DATE,
     location VARCHAR(255)
 );
 
--- ==========================
--- UFC FIGHTER DETAILS
--- ==========================
+-- UFC Fighter Details
 CREATE TABLE ufc_fighter_details (
     id SERIAL PRIMARY KEY,
-    first VARCHAR(100) NOT NULL,
-    last VARCHAR(100) NOT NULL,
+    first VARCHAR(100),
+    last VARCHAR(100),
     nickname VARCHAR(100),
     url TEXT UNIQUE
 );
 
--- ==========================
--- UFC FIGHTER TOTT (Tale of the Tape)
--- ==========================
+-- Fighter Tale of the Tape
 CREATE TABLE ufc_fighter_tott (
     id SERIAL PRIMARY KEY,
     fighter_id INT NOT NULL,
@@ -35,20 +29,16 @@ CREATE TABLE ufc_fighter_tott (
     CONSTRAINT fk_fighter_tott FOREIGN KEY (fighter_id) REFERENCES ufc_fighter_details (id) ON DELETE CASCADE
 );
 
--- ==========================
--- UFC FIGHT DETAILS
--- ==========================
+-- Fight Details
 CREATE TABLE ufc_fight_details (
     id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,
-    bout VARCHAR(255) NOT NULL,
+    bout VARCHAR(255),
     url TEXT,
     CONSTRAINT fk_fight_event FOREIGN KEY (event_id) REFERENCES ufc_event_details (id) ON DELETE CASCADE
 );
 
--- ==========================
--- UFC FIGHT RESULTS
--- ==========================
+-- Fight Results
 CREATE TABLE ufc_fight_results (
     id SERIAL PRIMARY KEY,
     fight_id INT NOT NULL,
@@ -64,23 +54,21 @@ CREATE TABLE ufc_fight_results (
     CONSTRAINT fk_results_fight FOREIGN KEY (fight_id) REFERENCES ufc_fight_details (id) ON DELETE CASCADE
 );
 
--- ==========================
--- UFC FIGHT STATS
--- ==========================
+-- Fight Stats
 CREATE TABLE ufc_fight_stats (
     id SERIAL PRIMARY KEY,
     fight_id INT NOT NULL,
     fighter_id INT NOT NULL,
-    round INT NOT NULL,
+    round INT,
     kd INT,
-    sig_str VARCHAR(50),      -- e.g. "20 of 40"
-    sig_str_pct VARCHAR(10),  -- e.g. "50%"
+    sig_str VARCHAR(50),
+    sig_str_pct VARCHAR(10),
     total_str VARCHAR(50),
     td VARCHAR(50),
     td_pct VARCHAR(10),
     sub_att INT,
     rev INT,
-    ctrl VARCHAR(20),         -- usually time like "2:15"
+    ctrl VARCHAR(20),
     head VARCHAR(50),
     body VARCHAR(50),
     leg VARCHAR(50),
