@@ -1,25 +1,25 @@
--- Staging: UFC Event Details
-CREATE TABLE staging_ufc_event_details (
+-- UFC Event Details
+CREATE TABLE ufc_event_details (
     event TEXT,
     url TEXT,
     date TEXT,  -- raw as text to handle malformed dates
     location TEXT,
-    event_id TEXT,
+    event_id INT,
     event_norm TEXT
 );
 
--- Staging: UFC Fighter Details
-CREATE TABLE staging_ufc_fighter_details (
-    fighter_id TEXT,
+-- UFC Fighter Details
+CREATE TABLE ufc_fighter_details (
+    fighter_id INT,
     first TEXT,
     last TEXT,
     nickname TEXT,
     url TEXT
 );
 
--- Staging: Fighter Tale of the Tape
-CREATE TABLE staging_ufc_fighter_tott (
-    fighter_id TEXT,
+-- Fighter Tale of the Tape
+CREATE TABLE ufc_fighter_tott (
+    fighter_id INT,
     height TEXT,
     weight TEXT,
     reach TEXT,
@@ -28,20 +28,19 @@ CREATE TABLE staging_ufc_fighter_tott (
     url TEXT
 );
 
--- Staging: Fight Details
-CREATE TABLE staging_ufc_fight_details (
-    fight_id TEXT,
-    event_id TEXT,
+-- Fight Details
+CREATE TABLE ufc_fight_details (
+    fight_id INT,
+    event_id INT,
     bout TEXT,
-    url TEXT,
     event_norm TEXT,
     bout_norm TEXT,
     bout_anagram TEXT
 );
 
--- Staging: Fight Results
-CREATE TABLE staging_ufc_fight_results (
-    fight_id TEXT,
+-- Fight Results
+CREATE TABLE ufc_fight_results (
+    fight_id INT,
     bout TEXT,
     outcome TEXT,
     weightclass TEXT,
@@ -56,19 +55,19 @@ CREATE TABLE staging_ufc_fight_results (
     fighter_b_nickname TEXT
 );
 
--- Staging: Fight Stats
-CREATE TABLE staging_ufc_fight_stats (
-    fight_id TEXT,
-    fighter_id TEXT,
+-- Fight Stats
+CREATE TABLE ufc_fight_stats (
+    fight_id INT,
+    fighter_id INT,
     round TEXT,
     kd TEXT,
-    "sig.str." TEXT,
-    "sig.str. %" TEXT,
-    "total str." TEXT,
+    sig_str TEXT,
+    sig_str_pct TEXT,
+    total_str TEXT,
     td TEXT,
-    "td %" TEXT,
-    "sub.att" TEXT,
-    "rev." TEXT,
+    td_pct TEXT,
+    sub_att TEXT,
+    rev TEXT,
     ctrl TEXT,
     head TEXT,
     body TEXT,
@@ -77,3 +76,4 @@ CREATE TABLE staging_ufc_fight_stats (
     clinch TEXT,
     ground TEXT
 );
+

@@ -46,7 +46,7 @@ fights = fights.merge(events[['event_id', 'event_norm']], on='event_norm', how='
 
 # Add fight_id
 fights.insert(0, "fight_id", range(len(fights), 0, -1))
-fights = fights[['fight_id', 'event_id', 'bout', 'url', 'event_norm', 'bout_norm', 'bout_anagram']]
+fights = fights[['fight_id', 'event_id', 'bout', 'event_norm', 'bout_norm', 'bout_anagram']]
 fights.to_csv("csv/ufc_fight_details_with_id.csv", index=False)
 
 # ---------- 5. Fight Results ----------
@@ -124,6 +124,8 @@ final_stats = final_stats[['fight_id', 'fighter_id', 'round', 'kd', 'sig.str.', 
 # Ensure fighter_id is integer (no ".0")
 final_stats['fighter_id'] = final_stats['fighter_id'].astype('Int64')  # allows NULLs
 final_stats['kd'] = final_stats['kd'].astype('Int64')
+final_stats['sub.att'] = final_stats['sub.att'].astype('Int64')
+final_stats['rev.'] = final_stats['rev.'].astype('Int64')
 
 
 # ---------- 7. Split "X of Y" columns into separate numeric columns ----------
