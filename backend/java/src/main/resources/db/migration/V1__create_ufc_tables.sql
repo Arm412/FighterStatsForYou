@@ -2,7 +2,7 @@
 CREATE TABLE ufc_event_details (
     event TEXT,
     url TEXT,
-    date TEXT,  -- raw as text to handle malformed dates
+    date TEXT,
     location TEXT,
     event_id INT,
     event_norm TEXT
@@ -33,6 +33,7 @@ CREATE TABLE ufc_fight_details (
     fight_id INT,
     event_id INT,
     bout TEXT,
+    url TEXT,
     event_norm TEXT,
     bout_norm TEXT,
     bout_anagram TEXT
@@ -60,20 +61,29 @@ CREATE TABLE ufc_fight_stats (
     fight_id INT,
     fighter_id INT,
     round TEXT,
-    kd TEXT,
-    sig_str TEXT,
+    kd INT,
     sig_str_pct TEXT,
-    total_str TEXT,
-    td TEXT,
     td_pct TEXT,
-    sub_att TEXT,
-    rev TEXT,
+    sub_att INT,
+    rev INT,
     ctrl TEXT,
-    head TEXT,
-    body TEXT,
-    leg TEXT,
-    distance TEXT,
-    clinch TEXT,
-    ground TEXT
+    sig_str_landed INT,
+    sig_str_attempted INT,
+    total_str_landed INT,
+    total_str_attempted INT,
+    td_landed INT,
+    td_attempted INT,
+    head_landed INT,
+    head_attempted INT,
+    body_landed INT,
+    body_attempted INT,
+    leg_landed INT,
+    leg_attempted INT,
+    distance_landed INT,
+    distance_attempted INT,
+    clinch_landed INT,
+    clinch_attempted INT,
+    ground_landed INT,
+    ground_attempted INT
 );
 

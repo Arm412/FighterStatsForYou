@@ -1,4 +1,4 @@
-fight_id,fighter_id,round,kd,sig.str. %,td %,sub.att,rev.,ctrl,sig.str._landed,sig.str._attempted,total str._landed,total str._attempted,td_landed,td_attempted,head_landed,head_attempted,body_landed,body_attempted,leg_landed,leg_attempted,distance_landed,distance_attempted,clinch_landed,clinch_attempted,ground_landed,ground_attempted
+fight_id,fighter_id,round,kd,sig_str_pct,td_pct,sub_att,rev,ctrl,sig_str_landed,sig_str_attempted,total_str_landed,total_str_attempted,td_landed,td_attempted,head_landed,head_attempted,body_landed,body_attempted,leg_landed,leg_attempted,distance_landed,distance_attempted,clinch_landed,clinch_attempted,ground_landed,ground_attempted
 8363,4087,round 1,1,64%,---,0,0,0:03,11,17,11,17,0,0,6,9,2,3,3,5,9,15,0,0,2,2
 8363,3279,round 1,0,45%,---,0,0,0:00,5,11,5,11,0,0,0,5,1,1,4,5,5,11,0,0,0,0
 8362,816,round 1,0,75%,50%,1,1,2:08,12,16,12,16,2,4,3,7,1,1,8,8,9,12,0,0,3,4

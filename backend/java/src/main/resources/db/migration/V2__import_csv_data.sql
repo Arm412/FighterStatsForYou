@@ -31,21 +31,31 @@ COPY ufc_fight_stats(
     fighter_id,
     round,
     kd,
-    sig_str,
     sig_str_pct,
-    total_str,
-    td,
     td_pct,
     sub_att,
     rev,
     ctrl,
-    head,
-    body,
-    leg,
-    distance,
-    clinch,
-    ground
+    sig_str_landed,
+    sig_str_attempted,
+    total_str_landed,
+    total_str_attempted,
+    td_landed,
+    td_attempted,
+    head_landed,
+    head_attempted,
+    body_landed,
+    body_attempted,
+    leg_landed,
+    leg_attempted,
+    distance_landed,
+    distance_attempted,
+    clinch_landed,
+    clinch_attempted,
+    ground_landed,
+    ground_attempted
 )
-FROM '/csv/ufc_fight_stats_with_id.csv'
+FROM '/csv/ufc_fight_stats_with_id_split.csv'
 WITH (FORMAT csv, HEADER true);
+
 

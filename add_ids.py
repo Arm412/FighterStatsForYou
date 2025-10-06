@@ -137,6 +137,18 @@ for col in columns_to_split:
 # Drop original string columns
 final_stats = final_stats.drop(columns=columns_to_split)
 
+final_stats = final_stats.rename(columns={
+    "sig.str. %": "sig_str_pct",
+    "total str.": "total_str",
+    "td %": "td_pct",
+    "rev.": "rev",
+    "sub.att": "sub_att",
+    "sig.str._landed": "sig_str_landed",
+    "sig.str._attempted": "sig_str_attempted",
+    "total str._landed": "total_str_landed",
+    "total str._attempted": "total_str_attempted",
+})
+
 # Save updated CSV
 final_stats.to_csv("csv/ufc_fight_stats_with_id_split.csv", index=False)
 
