@@ -8,5 +8,11 @@ RUN mvn -DskipTests package
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /workspace/target/*.jar app.jar
+# install netcat so we can probe the postgres port at container start
+RUN apt-get update && apt-get install -y --no-install-recommends netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+# copy wait script (added in a separate file) and make it executable
+COPY wait-for-postgres.sh /app/wait-for-postgres.sh
+RUN chmod +x /app/wait-for-postgres.sh
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["sh","/app/wait-for-postgres.sh"]

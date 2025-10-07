@@ -57,5 +57,3 @@ COPY ufc_fight_stats(
 )
 FROM '/csv/ufc_fight_stats_with_id_split.csv'
 WITH (FORMAT csv, HEADER true);
-
-
