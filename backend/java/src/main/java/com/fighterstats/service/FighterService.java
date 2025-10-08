@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fighterstats.model.FighterResponse;
+import com.fighterstats.model.FighterDetails;
 import com.fighterstats.repo.FighterRepository;
 
 @Service
@@ -18,11 +18,12 @@ public class FighterService {
     this.fighterRepository = fighterRepository;
   }
 
-  public FighterResponse getFighterById(Long id) {
-    return fighterRepository.findById(id).orElseThrow(() -> new RuntimeException("Fighter not found with id " + id));
+  public FighterDetails getFighterById(Long id) {
+    return fighterRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Fighter not found with id " + id));
   }
 
-  public List<FighterResponse> getAllFighters() {
+  public List<FighterDetails> getAllFighters() {
     return fighterRepository.findAll();
   }
 }

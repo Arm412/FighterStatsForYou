@@ -23,7 +23,7 @@ Options to build/run the service:
 
    # Ensure docker-compose postgres is running first
    docker-compose up -d postgres
-   docker run --rm -v ${PWD}:/workspace -w /workspace/backend/java maven:3.9.4-eclipse-temurin-17 mvn spring-boot:run
+   docker run --rm -v ${PWD}:/workspace -w /workspace/backend/java maven:3.9.4-eclipse-temurin-21 mvn spring-boot:run
 
 Start Postgres + app together (recommended for integration)
 

@@ -1,6 +1,6 @@
 package com.fighterstats.controller;
 
-import com.fighterstats.model.FighterResponse;
+import com.fighterstats.model.FighterDetails;
 import com.fighterstats.service.FighterService;
 
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,12 @@ public class FighterController {
     }
 
     @GetMapping("/all")
-    public List<FighterResponse> getAll() {
+    public List<FighterDetails> getAll() {
         return fighterService.getAllFighters();
+    }
+
+    @GetMapping("/{id}")
+    public FighterDetails getFighterWithId(@PathVariable Long id) {
+        return fighterService.getFighterById(id);
     }
 }

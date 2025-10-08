@@ -1,0 +1,54 @@
+package com.fighterstats.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "ufc_fight_results")
+public class FightResults {
+  @Column(name = "fight_id")
+  private Long id;
+
+  @Column(name = "bout")
+  private String bout;
+
+  @Column(name = "outcome")
+  private String outcome;
+
+  @Column(name = "weightclass")
+  private String eventNorm;
+
+  @Column(name = "method")
+  private String method;
+
+  @Column(name = "round")
+  private String round;
+
+  @Column(name = "time")
+  private String time;
+
+  @Column(name = "time_format")
+  private String timeFormat;
+
+  @Column(name = "referee")
+  private String referee;
+
+  @Column(name = "details")
+  private String details;
+
+  @Column(name = "event")
+  private String event;
+
+  @Column(name = "fighter_a_nickname")
+  private String fighterANickname;
+
+  @Column(name = "fighter_b_nickname")
+  private String fighterBNickname;
+}
