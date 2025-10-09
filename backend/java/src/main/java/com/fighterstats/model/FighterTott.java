@@ -1,6 +1,7 @@
 package com.fighterstats.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "ufc_fighter_tott")
 public class FighterTott {
+
   @Id
   @Column(name = "fighter_id")
   private Long id;

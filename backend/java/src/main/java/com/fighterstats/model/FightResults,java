@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "ufc_fight_results")
 public class FightResults {
+  @Id
   @Column(name = "fight_id")
   private Long id;
 

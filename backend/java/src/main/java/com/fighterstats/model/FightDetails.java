@@ -1,5 +1,7 @@
 package com.fighterstats.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ufc_fight_details")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class FightDetails {
 
   @Id
