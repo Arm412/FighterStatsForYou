@@ -1,6 +1,7 @@
 package com.fighterstats.controller;
 
 import com.fighterstats.model.FighterDetails;
+import com.fighterstats.model.FighterTott;
 import com.fighterstats.service.FighterService;
 
 import org.springframework.web.bind.annotation.*;
@@ -24,5 +25,15 @@ public class FighterController {
     @GetMapping("/{id}")
     public FighterDetails getFighterWithId(@PathVariable Long id) {
         return fighterService.getFighterById(id);
+    }
+
+    @GetMapping("/tott/all")
+    public List<FighterTott> getAllTalesOfTheTape() {
+        return fighterService.getAllTalesOfTheTape();
+    }
+
+    @GetMapping("/tott/{id}")
+    public FighterTott getFighterTOTTWithId(@PathVariable Long id) {
+        return fighterService.getFighterTOTTById(id);
     }
 }

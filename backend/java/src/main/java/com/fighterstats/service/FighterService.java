@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fighterstats.model.FighterDetails;
+import com.fighterstats.model.FighterTott;
 import com.fighterstats.repo.FighterRepository;
+import com.fighterstats.repo.FighterTOTTRepository;
 
 @Service
 public class FighterService {
@@ -14,8 +16,12 @@ public class FighterService {
   @Autowired
   FighterRepository fighterRepository;
 
-  public FighterService(FighterRepository fighterRepository) {
+  @Autowired
+  FighterTOTTRepository fighterTOTTRepository;
+
+  public FighterService(FighterRepository fighterRepository, FighterTOTTRepository fighterTOTTRepository) {
     this.fighterRepository = fighterRepository;
+    this.fighterTOTTRepository = fighterTOTTRepository;
   }
 
   public FighterDetails getFighterById(Long id) {
@@ -25,5 +31,14 @@ public class FighterService {
 
   public List<FighterDetails> getAllFighters() {
     return fighterRepository.findAll();
+  }
+
+  public FighterTott getFighterTOTTById(Long id) {
+    return fighterTOTTRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Fighter Tale Of The Tape not found with id " + id));
+  }
+
+  public List<FighterTott> getAllTalesOfTheTape() {
+    return fighterTOTTRepository.findAll();
   }
 }
