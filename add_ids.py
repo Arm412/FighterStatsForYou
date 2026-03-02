@@ -87,7 +87,7 @@ stats['first'] = stats['first'].fillna('')
 
 # build full name (first plus optional last)
 stats['full_name'] = stats.apply(
-    lambda r: r['first'] if r['last'] == '' else f"{r['first']} {r['last']}",
+    lambda r: (r['first'] + ' ' + r['last']).strip(),
     axis=1
 )
 
@@ -95,7 +95,7 @@ stats['full_name'] = stats.apply(
 fighters['first'] = fighters['first'].fillna('')
 fighters['last'] = fighters['last'].fillna('')
 fighters['full_name'] = fighters.apply(
-    lambda r: r['first'] if r['last'] == '' else f"{r['first']} {r['last']}",
+    lambda r: (r['first'] + ' ' + r['last']).strip(),
     axis=1
 )
 
@@ -104,21 +104,45 @@ nick_counts = fighters['nickname'].value_counts()
 unique_nicks = nick_counts[nick_counts == 1].index
 unique_nick_map = fighters[fighters['nickname'].isin(unique_nicks)].set_index('nickname')['fighter_id'].to_dict()
 
-# function to assign fighter_id using nickname if unique, else full_name match
+# function to assign fighter_id using a combination of full name and nickname
+# this is important when multiple fighters share the same name (e.g. two Bruno Silvas).
+# We'll try a strict match on first+last+nickname first, then fall back to global
+# nickname uniqueness or a unique full‑name match.
 
 def lookup_id(row):
-    # try nickname if available and unique
     nick = row.get('fighter_nickname', '')
-    if pd.notna(nick) and nick != '' and nick in unique_nick_map:
-        return unique_nick_map[nick]
-    # otherwise match on full_name
-    matches = fighters[fighters['full_name'] == row['full_name']]
-    if len(matches) == 1:
-        return matches['fighter_id'].iloc[0]
-    # no match or ambiguous
+    full = row.get('full_name', '')
+
+    # if a nickname is supplied, try to resolve it along with the full name
+    if pd.notna(nick) and nick != '':
+        # find all fighters with the same full name
+        candidates = fighters[fighters['full_name'] == full]
+        # if there are multiple, narrow using the nickname
+        if len(candidates) > 1:
+            candidates = candidates[candidates['nickname'] == nick]
+        if len(candidates) == 1:
+            return candidates['fighter_id'].iloc[0]
+
+        # if still ambiguous but the nickname is unique across all fighters,
+        # we can use the global map as a fallback.
+        if nick in unique_nick_map:
+            return unique_nick_map[nick]
+    else:
+        # no nickname available; fall back to matching on full name alone
+        matches = fighters[fighters['full_name'] == full]
+        if len(matches) == 1:
+            return matches['fighter_id'].iloc[0]
+
+    # nothing matched unambiguously
     return pd.NA
 
 stats['fighter_id'] = stats.apply(lookup_id, axis=1)
+
+# log any rows where we failed to assign an ID (helpful for debugging duplicates)
+unmatched = stats[stats['fighter_id'].isna()][['fighter', 'fighter_nickname']].drop_duplicates()
+if len(unmatched) > 0:
+    print("⚠️ could not assign fighter_id for the following names:")
+    print(unmatched.to_string(index=False))
 
 # after assigning fighter_id we can continue with results merge
 stats_merged = stats.copy()
