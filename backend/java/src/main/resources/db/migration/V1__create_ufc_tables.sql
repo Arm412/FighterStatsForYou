@@ -84,6 +84,8 @@ CREATE TABLE ufc_fight_stats (
     clinch_landed INT,
     clinch_attempted INT,
     ground_landed INT,
-    ground_attempted INT
+    ground_attempted INT,
+    PRIMARY KEY (fight_id, fighter_id, round)
 );
+
 

@@ -18,4 +18,7 @@ public class FightStatsId implements Serializable {
 
   @Column(name = "fighter_id")
   private Long fighterId;
+
+  @Column(name = "round")
+  private String round;
 }

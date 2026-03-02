@@ -45,7 +45,12 @@ public class FightController {
   }
 
   @GetMapping("/stats/{fightId}/{fighterId}")
-  public FightStats getFightStatsWithId(@PathVariable Long fightId, @PathVariable Long fighterId) {
-    return fightService.getFightStatsById(new FightStatsId(fightId, fighterId));
+  public List<FightStats> getFightStatsWithId(@PathVariable Long fightId, @PathVariable Long fighterId) {
+    return fightService.getFightStatsByFightAndFighter(fightId, fighterId);
+  }
+
+  @GetMapping("/stats/{fightId}")
+  public List<FightStats> getFightStatsWithId(@PathVariable Long fightId) {
+    return fightService.getFightStatsByFight(fightId);
   }
 }

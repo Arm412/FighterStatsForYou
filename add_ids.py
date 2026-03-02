@@ -78,31 +78,50 @@ for df in [fighters, results, stats]:
     for col in df.select_dtypes(include="object"):
         df[col] = df[col].str.strip().str.lower()
 
-# Create 'merge_name' in stats: use nickname if available, otherwise first + last
-stats['merge_name'] = stats['fighter_nickname'].fillna('')
 
-# Split fighter name into first and last
+# Split fighter name into first and last (last may be NaN for single-name fighters)
 stats[['first', 'last']] = stats['fighter'].str.split(' ', n=1, expand=True)
+# replace NaN with empty string so concatenation works
+stats['last'] = stats['last'].fillna('')
+stats['first'] = stats['first'].fillna('')
 
-stats['merge_name'] = stats.apply(
-    lambda row: row['merge_name'] if row['merge_name'] else f"{row['first']} {row['last']}",
+# build full name (first plus optional last)
+stats['full_name'] = stats.apply(
+    lambda r: r['first'] if r['last'] == '' else f"{r['first']} {r['last']}",
     axis=1
 )
 
-# Prepare fighters dataframe for merging
-fighters['merge_name'] = fighters['nickname'].fillna('')
-fighters['merge_name'] = fighters.apply(
-    lambda row: row['merge_name'] if row['merge_name'] else f"{row['first']} {row['last']}",
+# prepare fighters table with same full_name column
+fighters['first'] = fighters['first'].fillna('')
+fighters['last'] = fighters['last'].fillna('')
+fighters['full_name'] = fighters.apply(
+    lambda r: r['first'] if r['last'] == '' else f"{r['first']} {r['last']}",
     axis=1
 )
 
-# Merge stats with fighters on merge_name to get fighter_id
-stats_merged = stats.merge(
-    fighters[['fighter_id', 'first', 'last', 'nickname']],
-    left_on=['first', 'last', 'fighter_nickname'],
-    right_on=['first', 'last', 'nickname'],
-    how='left'
-)
+# identify unique nicknames (only use nickname if it maps to exactly one fighter)
+nick_counts = fighters['nickname'].value_counts()
+unique_nicks = nick_counts[nick_counts == 1].index
+unique_nick_map = fighters[fighters['nickname'].isin(unique_nicks)].set_index('nickname')['fighter_id'].to_dict()
+
+# function to assign fighter_id using nickname if unique, else full_name match
+
+def lookup_id(row):
+    # try nickname if available and unique
+    nick = row.get('fighter_nickname', '')
+    if pd.notna(nick) and nick != '' and nick in unique_nick_map:
+        return unique_nick_map[nick]
+    # otherwise match on full_name
+    matches = fighters[fighters['full_name'] == row['full_name']]
+    if len(matches) == 1:
+        return matches['fighter_id'].iloc[0]
+    # no match or ambiguous
+    return pd.NA
+
+stats['fighter_id'] = stats.apply(lookup_id, axis=1)
+
+# after assigning fighter_id we can continue with results merge
+stats_merged = stats.copy()
 
 # Merge with results on event + bout
 stats_merged['event'] = stats_merged['event'].str.strip().str.lower()

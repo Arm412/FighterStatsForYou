@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.fighterstats.model.FightDetails;
 import com.fighterstats.model.FightResults;
 import com.fighterstats.model.FightStats;
-import com.fighterstats.model.FightStatsId;
 import com.fighterstats.repo.FightRepository;
 import com.fighterstats.repo.FightResultsRepository;
 import com.fighterstats.repo.FightStatsRepository;
@@ -51,8 +50,21 @@ public class FightService {
     return fightStatsRepository.findAll();
   }
 
-  public FightStats getFightStatsById(FightStatsId id) {
-    return fightStatsRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Fight stats not found with id " + id));
+  public List<FightStats> getFightStatsByFightAndFighter(Long fightId, Long fighterId) {
+    List<FightStats> results = fightStatsRepository.findByFightIdAndFighterId(fightId, fighterId);
+    if (results == null || results.isEmpty()) {
+      throw new RuntimeException(
+          "Fight stats not found with fight id " + fightId + " and fighter id " + fighterId);
+    }
+    return results;
+  }
+
+  public List<FightStats> getFightStatsByFight(Long fightId) {
+    List<FightStats> results = fightStatsRepository.findByFightId(fightId);
+    if (results == null || results.isEmpty()) {
+      throw new RuntimeException(
+          "Fight stats not found with fight id " + fightId);
+    }
+    return results;
   }
 }

@@ -18,9 +18,6 @@ public class FightStats {
   @EmbeddedId
   private FightStatsId id;
 
-  @Column(name = "round")
-  private String round;
-
   @Column(name = "kd")
   private Long kd;
 
