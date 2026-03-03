@@ -3,7 +3,6 @@ package com.fighterstats.controller;
 import com.fighterstats.model.FightDetails;
 import com.fighterstats.model.FightResults;
 import com.fighterstats.model.FightStats;
-import com.fighterstats.model.FightStatsId;
 import com.fighterstats.service.FightService;
 
 import org.springframework.web.bind.annotation.*;
