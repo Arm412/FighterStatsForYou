@@ -17,15 +17,24 @@ public class FighterController {
         this.fighterService = fighterService;
     }
 
+    // Fighter Details Endpoints
+
     @GetMapping("/all")
     public List<FighterDetails> getAll() {
         return fighterService.getAllFighters();
+    }
+
+    @GetMapping("/search")
+    public List<FighterDetails> getFightersByName(@RequestParam String name) {
+        return fighterService.findFighterWithString(name.toLowerCase());
     }
 
     @GetMapping("/{id}")
     public FighterDetails getFighterWithId(@PathVariable Long id) {
         return fighterService.getFighterById(id);
     }
+
+    // Fighter Tale Of The Tape Endpoints
 
     @GetMapping("/tott/all")
     public List<FighterTott> getAllTalesOfTheTape() {

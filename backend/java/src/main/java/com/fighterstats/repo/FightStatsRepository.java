@@ -17,5 +17,4 @@ public interface FightStatsRepository extends JpaRepository<FightStats, FightSta
 
   @Query("SELECT f FROM FightStats f WHERE f.id.fightId = :fightId")
   List<FightStats> findByFightId(@Param("fightId") Long fightId);
-
 }

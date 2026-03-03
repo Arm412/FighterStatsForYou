@@ -33,6 +33,10 @@ public class FighterService {
     return fighterRepository.findAll();
   }
 
+  public List<FighterDetails> findFighterWithString(String name) {
+    return fighterRepository.findByString(name);
+  }
+
   public FighterTott getFighterTOTTById(Long id) {
     return fighterTOTTRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Fighter Tale Of The Tape not found with id " + id));
