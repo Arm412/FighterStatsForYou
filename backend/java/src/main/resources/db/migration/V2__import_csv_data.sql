@@ -16,7 +16,7 @@ FROM '/csv/ufc_fighter_tott_with_id.csv'
 WITH (FORMAT csv, HEADER true);
 
 -- Import Fights
-COPY ufc_fight_details(fight_id, event_id, bout)
+COPY ufc_fight_details(fight_id, event_id, bout, url)
 FROM '/csv/ufc_fight_details_with_id.csv'
 WITH (FORMAT csv, HEADER true);
 

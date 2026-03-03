@@ -53,7 +53,7 @@ fights = fights.drop_duplicates(subset=['event_norm', 'bout_anagram'], keep='fir
 
 # Add fight_id
 fights.insert(0, "fight_id", range(len(fights), 0, -1))
-fights = fights[['fight_id', 'event_id', 'bout', 'event_norm', 'bout_norm', 'bout_anagram']]
+fights = fights[['fight_id', 'event_id', 'bout', 'url','event_norm', 'bout_norm', 'bout_anagram']]
 
 # Create clean version without the normalized columns for final output
 fights_clean = fights.drop(columns=['event_norm', 'bout_norm', 'bout_anagram'])
