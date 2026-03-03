@@ -29,7 +29,4 @@ public class EventDetails {
   @Id
   @Column(name = "event_id")
   private Long eventId;
-
-  @Column(name = "event_norm")
-  private String boutNorm;
 }

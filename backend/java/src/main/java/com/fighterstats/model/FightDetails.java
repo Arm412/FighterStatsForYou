@@ -30,13 +30,4 @@ public class FightDetails {
 
   @Column(name = "url")
   private String url;
-
-  @Column(name = "event_norm")
-  private String eventNorm;
-
-  @Column(name = "bout_norm")
-  private String boutNorm;
-
-  @Column(name = "bout_anagram")
-  private String boutAnagram;
 }

@@ -31,7 +31,10 @@ events['event_id'] = range(len(events), 0, -1)
 # Normalize event names for merging
 events['event_norm'] = events['event'].str.strip().str.lower().str.replace(r'\s+', ' ', regex=True)
 
-events.to_csv("csv/ufc_event_details_with_id.csv", index=False)
+# Create dictionary of events without the normalized column to clean up the final output
+events_clean = events.drop(columns=['event_norm'])
+
+events_clean.to_csv("csv/ufc_event_details_with_id.csv", index=False)
 
 # ---------- 4. Fights ----------
 fights = pd.read_csv("csv/ufc_fight_details.csv")
@@ -44,10 +47,18 @@ fights['bout_anagram'] = fights['bout_norm'].apply(lambda x: ''.join(sorted(x.re
 # Merge event_id
 fights = fights.merge(events[['event_id', 'event_norm']], on='event_norm', how='left')
 
+# remove duplicate fight rows that have the same event + bout signature
+# keep the first occurrence (preserves the first URL/fight row seen by the scraper)
+fights = fights.drop_duplicates(subset=['event_norm', 'bout_anagram'], keep='first').reset_index(drop=True)
+
 # Add fight_id
 fights.insert(0, "fight_id", range(len(fights), 0, -1))
 fights = fights[['fight_id', 'event_id', 'bout', 'event_norm', 'bout_norm', 'bout_anagram']]
-fights.to_csv("csv/ufc_fight_details_with_id.csv", index=False)
+
+# Create clean version without the normalized columns for final output
+fights_clean = fights.drop(columns=['event_norm', 'bout_norm', 'bout_anagram'])
+
+fights_clean.to_csv("csv/ufc_fight_details_with_id.csv", index=False)
 
 # ---------- 5. Fight Results ----------
 results = pd.read_csv("csv/ufc_fight_results.csv")
@@ -154,7 +165,11 @@ results['event'] = results['event'].str.strip().str.lower()
 results['bout'] = results['bout'].str.strip().str.lower()
 
 final_stats = stats_merged.merge(
-    results[['fight_id', 'event', 'bout']],
+    # use a deduplicated mapping of (event,bout) -> fight_id to avoid many-to-many
+    # joins when `results` contains more than one row per fight (e.g. one row
+    # per competitor). This prevents Cartesian products that create duplicate
+    # stat rows for the same (fight_id,fighter_id,round).
+    results[['fight_id', 'event', 'bout']].drop_duplicates(subset=['event', 'bout']),
     on=['event', 'bout'],
     how='left'
 )
