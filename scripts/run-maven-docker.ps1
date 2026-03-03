@@ -25,6 +25,6 @@ $pwdPath = Resolve-Path $RepoRoot
 $pwdPathStr = $pwdPath.Path -replace '\\','/'
 $pwdPathStr = $pwdPathStr -replace '^([A-Za-z]):','/$1'
 
-$dockerCmd = "docker run --rm -v `"$pwdPathStr`":/workspace -w /workspace/$Module maven:3.9.4-eclipse-temurin-17 mvn $Args"
+$dockerCmd = "docker run --rm -v `"$pwdPathStr`":/workspace -w /workspace/$Module maven:3.9.4-eclipse-temurin-21 mvn $Args"
 Write-Output "Running: $dockerCmd"
 Invoke-Expression $dockerCmd

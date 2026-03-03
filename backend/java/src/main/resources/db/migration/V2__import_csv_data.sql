@@ -1,7 +1,7 @@
 -- flyway:executeInTransaction=false
 
 -- Import Events
-COPY ufc_event_details(event, url, date, location, event_id, event_norm)
+COPY ufc_event_details(event, url, date, location, event_id)
 FROM '/csv/ufc_event_details_with_id.csv'
 WITH (FORMAT csv, HEADER true);
 
@@ -16,7 +16,7 @@ FROM '/csv/ufc_fighter_tott_with_id.csv'
 WITH (FORMAT csv, HEADER true);
 
 -- Import Fights
-COPY ufc_fight_details(fight_id, event_id, bout, event_norm, bout_norm, bout_anagram)
+COPY ufc_fight_details(fight_id, event_id, bout, url)
 FROM '/csv/ufc_fight_details_with_id.csv'
 WITH (FORMAT csv, HEADER true);
 
@@ -26,7 +26,13 @@ FROM '/csv/ufc_fight_results_with_id.csv'
 WITH (FORMAT csv, HEADER true);
 
 -- Import Stats
-COPY ufc_fight_stats(
+-- load into temporary table first to filter out bad rows before enforcing constraints
+CREATE TEMP TABLE tmp_fight_stats AS
+    SELECT *
+    FROM ufc_fight_stats
+    WITH NO DATA;
+
+COPY tmp_fight_stats(
     fight_id,
     fighter_id,
     round,
@@ -58,4 +64,15 @@ COPY ufc_fight_stats(
 FROM '/csv/ufc_fight_stats_with_id_split.csv'
 WITH (FORMAT csv, HEADER true);
 
+-- insert only valid rows into real table
+-- deduplicate on primary key to avoid duplicate-key errors when CSV contains repeats
+INSERT INTO ufc_fight_stats
+SELECT *
+FROM (
+    SELECT DISTINCT ON (fight_id, fighter_id, round) *
+    FROM tmp_fight_stats
+    WHERE fighter_id IS NOT NULL
+    ORDER BY fight_id, fighter_id, round
+) dedup;
 
+DROP TABLE tmp_fight_stats;

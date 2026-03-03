@@ -31,7 +31,10 @@ events['event_id'] = range(len(events), 0, -1)
 # Normalize event names for merging
 events['event_norm'] = events['event'].str.strip().str.lower().str.replace(r'\s+', ' ', regex=True)
 
-events.to_csv("csv/ufc_event_details_with_id.csv", index=False)
+# Create dictionary of events without the normalized column to clean up the final output
+events_clean = events.drop(columns=['event_norm'])
+
+events_clean.to_csv("csv/ufc_event_details_with_id.csv", index=False)
 
 # ---------- 4. Fights ----------
 fights = pd.read_csv("csv/ufc_fight_details.csv")
@@ -44,10 +47,18 @@ fights['bout_anagram'] = fights['bout_norm'].apply(lambda x: ''.join(sorted(x.re
 # Merge event_id
 fights = fights.merge(events[['event_id', 'event_norm']], on='event_norm', how='left')
 
+# remove duplicate fight rows that have the same event + bout signature
+# keep the first occurrence (preserves the first URL/fight row seen by the scraper)
+fights = fights.drop_duplicates(subset=['event_norm', 'bout_anagram'], keep='first').reset_index(drop=True)
+
 # Add fight_id
 fights.insert(0, "fight_id", range(len(fights), 0, -1))
-fights = fights[['fight_id', 'event_id', 'bout', 'event_norm', 'bout_norm', 'bout_anagram']]
-fights.to_csv("csv/ufc_fight_details_with_id.csv", index=False)
+fights = fights[['fight_id', 'event_id', 'bout', 'url','event_norm', 'bout_norm', 'bout_anagram']]
+
+# Create clean version without the normalized columns for final output
+fights_clean = fights.drop(columns=['event_norm', 'bout_norm', 'bout_anagram'])
+
+fights_clean.to_csv("csv/ufc_fight_details_with_id.csv", index=False)
 
 # ---------- 5. Fight Results ----------
 results = pd.read_csv("csv/ufc_fight_results.csv")
@@ -78,31 +89,74 @@ for df in [fighters, results, stats]:
     for col in df.select_dtypes(include="object"):
         df[col] = df[col].str.strip().str.lower()
 
-# Create 'merge_name' in stats: use nickname if available, otherwise first + last
-stats['merge_name'] = stats['fighter_nickname'].fillna('')
 
-# Split fighter name into first and last
+# Split fighter name into first and last (last may be NaN for single-name fighters)
 stats[['first', 'last']] = stats['fighter'].str.split(' ', n=1, expand=True)
+# replace NaN with empty string so concatenation works
+stats['last'] = stats['last'].fillna('')
+stats['first'] = stats['first'].fillna('')
 
-stats['merge_name'] = stats.apply(
-    lambda row: row['merge_name'] if row['merge_name'] else f"{row['first']} {row['last']}",
+# build full name (first plus optional last)
+stats['full_name'] = stats.apply(
+    lambda r: (r['first'] + ' ' + r['last']).strip(),
     axis=1
 )
 
-# Prepare fighters dataframe for merging
-fighters['merge_name'] = fighters['nickname'].fillna('')
-fighters['merge_name'] = fighters.apply(
-    lambda row: row['merge_name'] if row['merge_name'] else f"{row['first']} {row['last']}",
+# prepare fighters table with same full_name column
+fighters['first'] = fighters['first'].fillna('')
+fighters['last'] = fighters['last'].fillna('')
+fighters['full_name'] = fighters.apply(
+    lambda r: (r['first'] + ' ' + r['last']).strip(),
     axis=1
 )
 
-# Merge stats with fighters on merge_name to get fighter_id
-stats_merged = stats.merge(
-    fighters[['fighter_id', 'first', 'last', 'nickname']],
-    left_on=['first', 'last', 'fighter_nickname'],
-    right_on=['first', 'last', 'nickname'],
-    how='left'
-)
+# identify unique nicknames (only use nickname if it maps to exactly one fighter)
+nick_counts = fighters['nickname'].value_counts()
+unique_nicks = nick_counts[nick_counts == 1].index
+unique_nick_map = fighters[fighters['nickname'].isin(unique_nicks)].set_index('nickname')['fighter_id'].to_dict()
+
+# function to assign fighter_id using a combination of full name and nickname
+# this is important when multiple fighters share the same name (e.g. two Bruno Silvas).
+# We'll try a strict match on first+last+nickname first, then fall back to global
+# nickname uniqueness or a unique full‑name match.
+
+def lookup_id(row):
+    nick = row.get('fighter_nickname', '')
+    full = row.get('full_name', '')
+
+    # if a nickname is supplied, try to resolve it along with the full name
+    if pd.notna(nick) and nick != '':
+        # find all fighters with the same full name
+        candidates = fighters[fighters['full_name'] == full]
+        # if there are multiple, narrow using the nickname
+        if len(candidates) > 1:
+            candidates = candidates[candidates['nickname'] == nick]
+        if len(candidates) == 1:
+            return candidates['fighter_id'].iloc[0]
+
+        # if still ambiguous but the nickname is unique across all fighters,
+        # we can use the global map as a fallback.
+        if nick in unique_nick_map:
+            return unique_nick_map[nick]
+    else:
+        # no nickname available; fall back to matching on full name alone
+        matches = fighters[fighters['full_name'] == full]
+        if len(matches) == 1:
+            return matches['fighter_id'].iloc[0]
+
+    # nothing matched unambiguously
+    return pd.NA
+
+stats['fighter_id'] = stats.apply(lookup_id, axis=1)
+
+# log any rows where we failed to assign an ID (helpful for debugging duplicates)
+unmatched = stats[stats['fighter_id'].isna()][['fighter', 'fighter_nickname']].drop_duplicates()
+if len(unmatched) > 0:
+    print("⚠️ could not assign fighter_id for the following names:")
+    print(unmatched.to_string(index=False))
+
+# after assigning fighter_id we can continue with results merge
+stats_merged = stats.copy()
 
 # Merge with results on event + bout
 stats_merged['event'] = stats_merged['event'].str.strip().str.lower()
@@ -111,7 +165,11 @@ results['event'] = results['event'].str.strip().str.lower()
 results['bout'] = results['bout'].str.strip().str.lower()
 
 final_stats = stats_merged.merge(
-    results[['fight_id', 'event', 'bout']],
+    # use a deduplicated mapping of (event,bout) -> fight_id to avoid many-to-many
+    # joins when `results` contains more than one row per fight (e.g. one row
+    # per competitor). This prevents Cartesian products that create duplicate
+    # stat rows for the same (fight_id,fighter_id,round).
+    results[['fight_id', 'event', 'bout']].drop_duplicates(subset=['event', 'bout']),
     on=['event', 'bout'],
     how='left'
 )

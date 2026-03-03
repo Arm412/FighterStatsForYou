@@ -1,8 +1,9 @@
 package com.fighterstats.controller;
 
-import com.fighterstats.model.Fighter;
-import com.fighterstats.repo.FighterRepository;
-import org.springframework.http.ResponseEntity;
+import com.fighterstats.model.FighterDetails;
+import com.fighterstats.model.FighterTott;
+import com.fighterstats.service.FighterService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +11,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/fighters")
 public class FighterController {
-    private final FighterRepository repo;
+    private final FighterService fighterService;
 
-    public FighterController(FighterRepository repo) {
-        this.repo = repo;
+    public FighterController(FighterService fighterService) {
+        this.fighterService = fighterService;
     }
 
-    @GetMapping
-    public List<Fighter> list() { return repo.findAll(); }
+    // Fighter Details Endpoints
 
-    @PostMapping
-    public Fighter create(@RequestBody Fighter f) { return repo.save(f); }
+    @GetMapping("/all")
+    public List<FighterDetails> getAll() {
+        return fighterService.getAllFighters();
+    }
+
+    @GetMapping("/search")
+    public List<FighterDetails> getFightersByName(@RequestParam String name) {
+        return fighterService.findFighterWithString(name.toLowerCase());
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Fighter> get(@PathVariable Long id) {
-        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public FighterDetails getFighterWithId(@PathVariable Long id) {
+        return fighterService.getFighterById(id);
+    }
+
+    // Fighter Tale Of The Tape Endpoints
+
+    @GetMapping("/tott/all")
+    public List<FighterTott> getAllTalesOfTheTape() {
+        return fighterService.getAllTalesOfTheTape();
+    }
+
+    @GetMapping("/tott/{id}")
+    public FighterTott getFighterTOTTWithId(@PathVariable Long id) {
+        return fighterService.getFighterTOTTById(id);
     }
 }
