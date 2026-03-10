@@ -1,0 +1,27 @@
+<div class="bg-amber-950 text-white h-full">
+  <div class="p-5">
+    <h2 class="text-2xl font-bold mb-4">Find a Fighter</h2>
+    <p class="mb-4">Search for your favorite fighters and view their stats.</p>
+    <input type="text" placeholder="Enter fighter name..." inputmode="text" [(ngModel)]="fighterName"
+      (ngModelChange)="onFighterChange($event)"
+      class="w-full p-2 mb-4 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+    <!-- <button class="w-full bg-amber-800 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded"
+      (click)="printFighterName()">
+      Search
+    </button> -->
+  </div>
+  <div class="px-5">
+    @for (fighter of fighterList(); track fighter.id) {
+    <div class="mb-4 p-4 bg-amber-800 rounded">
+      <h3 class="text-xl font-bold" *ngIf="fighter.first || fighter.last">
+        {{ fighter.first }}
+        <span *ngIf="fighter.nickname"> '{{ fighter.nickname }}'</span>
+        {{ fighter.last }}
+      </h3>
+    </div>
+    } @empty {
+    <p>No fighters found. Try searching for a different name.</p>
+    }
+
+  </div>
+</div>

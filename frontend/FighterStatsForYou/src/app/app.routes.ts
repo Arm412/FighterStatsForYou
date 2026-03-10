@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeSection } from './features/home-section/home-section';
-import { FindFighter } from './features/find-fighter/find-fighter';
-import { CompareFighters } from './features/compare-fighters/compare-fighters';
+import { FindFighter } from './features/fighters/find-fighter/find-fighter';
+import { CompareFighters } from './features/fighters/compare-fighters/compare-fighters';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
