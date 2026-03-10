@@ -2,7 +2,15 @@
 module.exports = {
   darkMode: 'class',
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{html,ts,scss}",
+  ],
+  safelist: [
+    'bg-primary',
+    'bg-secondary',
+    'bg-cardBg',
+    'text-primary',
+    'text-secondary',
+    'text-textMain',
   ],
   theme: {
     extend: {
