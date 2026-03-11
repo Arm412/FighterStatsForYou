@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { FighterService } from "./fighter.service";
 import { Fighter } from "./models/fighter";
 
@@ -8,8 +8,7 @@ import { Fighter } from "./models/fighter";
 export class FighterStore {
   readonly _fighters = signal<Fighter[]>([]);
 
-
-  constructor(private fighterService: FighterService) { }
+  private fighterService = inject(FighterService);
 
   setFighters(fighters: Fighter[]) {
     this._fighters.set(fighters);

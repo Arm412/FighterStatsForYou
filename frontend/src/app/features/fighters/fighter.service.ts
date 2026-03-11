@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Fighter } from "./models/fighter";
 
 @Injectable({
@@ -7,7 +7,7 @@ import { Fighter } from "./models/fighter";
 })
 export class FighterService {
 
-  constructor(private http: HttpClient) { }
+  http = inject(HttpClient)
 
   searchFighters(query: string) {
     return this.http.get<Fighter[]>(`/api/fighters/search?name=${query}`);
